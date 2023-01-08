@@ -1,12 +1,25 @@
 const sequelize = require('../db');
-const {DataTypes} = require('sequelize');
+const {DataTypes} = require('sequelize'); // с помощью DataTypes описываются типы полей в схемах БД
 
+
+// Создаем модели БД для каждой таблицы:
+// у объекта sequelize, который импортирован из файла db.js вызываем метод define
+// первым параметром передаем название модели, вторым - поля модели с конфигурацией
 const User = sequelize.define('user', {
+  // DataTypes.INTEGER означает, что тип данных будет число
+  // primaryKey означает, что значение уникально
+  // autoIncrement означает, что значение будет автоматически увеличиваться на 1 
+  // в соответствии с последним значением в таблице
   id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   email: {type: DataTypes.STRING, unique: true},
-  password: {type: DataTypes.STRING},
+  password: {type: DataTypes.STRING}, 
+  // defaultValue устанавливает значение по дефолту
+  // в нашем случае значение может быть либо USER либо ADMIN
   role: {type: DataTypes.STRING, defaultValue: "USER"}
 })
+
+// Внешние ключи в моделях не указываются, Sequelize формирует их автоматически
+// после того как мы установим двухсторонние связи
 
 const Basket = sequelize.define('basket', {
   id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -49,7 +62,10 @@ const TypeBrand = sequelize.define('type_brand', {
   id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
 })
 
-
+// Двухсторонняя установка связей
+// hasOne указывает, что один User может иметь одну корзину
+// Basket.belongsTo(User) указывает обратную связь и указывает на то,
+// что одна корзина может принадлежать одному User
 User.hasOne(Basket)
 Basket.belongsTo(User)
 
@@ -74,8 +90,11 @@ BasketDevice.belongsTo(Device)
 Device.hasMany(DeviceInfo, {as: 'info'});
 DeviceInfo.belongsTo(Device)
 
-Type.belongsToMany(Brand, {through: TypeBrand })
-Brand.belongsToMany(Type, {through: TypeBrand })
+// Когда связь в обе стороны происходит через belongsToMany
+// необходимо указать промежуточную таблицу и указать ее в объекте через поле through
+// в этом случае { through: TypeBrand } - таблица TypeBrand реализована выше
+Type.belongsToMany(Brand, { through: TypeBrand })
+Brand.belongsToMany(Type, { through: TypeBrand })
 
 module.exports = {
   User,

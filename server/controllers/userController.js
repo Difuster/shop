@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {User, Basket} = require('../models/models');
 
+// генерируем токен с помощью метода sign объекта jwt
+// в параметры передаем payload, секретный ключ и время жизни токена
 const generateJwt = (id, email, role) => {
   return jwt.sign(
     {id, email, role},
@@ -11,6 +13,8 @@ const generateJwt = (id, email, role) => {
   )
 };
 
+// создаем класс UserController, в котором определяем методы для работы с user
+// класс импортируем и экспортируем в routes, чтобы вызывать методы класса в нужном роутере
 class UserController {
   async registration(req, res, next) {
     const {email, password, role} = req.body;
@@ -34,6 +38,8 @@ class UserController {
     if (!user) {
         return next(ApiError.internal('Пользователь не найден'))
     }
+    // с помощью метода compareSync объекта bcrypt сравниваем переданный пароль 
+    // от клиента и пароль хранящийся в БД
     let comparePassword = bcrypt.compareSync(password, user.password);
     if (!comparePassword) {
         return next(ApiError.internal('Указан неверный пароль'));
