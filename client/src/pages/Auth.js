@@ -7,8 +7,6 @@ import { REGISTRATION_ROUTE, LOGIN_ROUTE } from '../utils/consts';
 export default function Auth() {
   const location = useLocation();
   const isLogin = location.pathname === LOGIN_ROUTE;
-  console.log(location)
-  console.log(isLogin)
   return (
     <Container
       className="d-flex justify-content-center align-items-center"
